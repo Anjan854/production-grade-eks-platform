@@ -1,0 +1,47 @@
+# Terraform working directory
+.terraform/
+
+# Terraform state files (VERY IMPORTANT)
+*.tfstate
+*.tfstate.*
+terraform.tfstate
+terraform.tfstate.backup
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Terraform variable files with secrets (optional safety)
+*.tfvars
+*.tfvars.json
+
+# Override files (local testing)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI config files
+.terraformrc
+terraform.rc
+
+# Lock file (DO COMMIT THIS in real projects, but optional for learning)
+# Uncomment only if you want strict reproducibility
+# .terraform.lock.hcl
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+
+# Sensitive local files
+*.pem
+*.key
+
+# AWS credentials (NEVER commit)
+.aws/
+credentials
+config
