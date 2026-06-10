@@ -26,7 +26,7 @@ resource "aws_subnet" "private" {
 
   vpc_id            = aws_vpc.this.id
   cidr_block        = each.value.cidr_block
-  availability_zone  = each.value.az
+  availability_zone = each.value.az
 
   tags = {
     Name = each.value.name
@@ -41,8 +41,8 @@ resource "aws_internet_gateway" "radar_gateway" {
   }
 }
 # Public Route Table
-resource "aws_default_route_table" "main" {
-  default_route_table_id = aws_vpc.this.default_route_table_id
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.this.id
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -50,8 +50,15 @@ resource "aws_default_route_table" "main" {
   }
 
   tags = {
-    Name = "main-rt"
+    Name = "${var.vpc_name}-public-rt"
   }
+}
+
+resource "aws_route_table_association" "public" {
+  for_each = aws_subnet.public
+
+  subnet_id      = each.value.id
+  route_table_id = aws_route_table.public.id
 }
 
 # Private Route Table
