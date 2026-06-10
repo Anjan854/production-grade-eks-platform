@@ -25,3 +25,5 @@ private_subnets = {
     name       = "dev-private-2"
   }
 }
+
+cluster_name = "dev-eks"
