@@ -27,3 +27,18 @@ private_subnets = {
 }
 
 cluster_name = "dev-eks"
+
+ecr_repo_name = [
+  "frontend",
+  "productcatalogservice",
+  "cartservice",
+  "checkoutservice",
+  "currencyservice",
+  "recommendationservice",
+  "shippingservice",
+  "paymentservice",
+  "emailservice",
+  "adservice",
+  "loadgenerator",
+  "shoppingassistantservice"
+]
