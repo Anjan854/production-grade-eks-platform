@@ -1,14 +1,9 @@
 def call(Map config) {
 
     sh """
-        docker buildx create \
-            --name builder \
-            --driver docker-container \
-            --use || true
+        /usr/local/bin/docker buildx inspect --bootstrap
 
-        docker buildx inspect --bootstrap
-
-        docker buildx build \
+        /usr/local/bin/docker buildx build \
             --platform linux/amd64 \
             -t ${config.accountId}.dkr.ecr.${config.region}.amazonaws.com/${config.repository}:${config.tag} \
             --push \

@@ -8,9 +8,9 @@ def call(String awsRegion, String accountId) {
     ]) {
 
         sh """
-            aws ecr get-login-password \
+            /usr/local/bin/aws ecr get-login-password \
                 --region ${awsRegion} \
-            | docker login \
+            | /usr/local/bin/docker login \
                 --username AWS \
                 --password-stdin \
                 ${accountId}.dkr.ecr.${awsRegion}.amazonaws.com
