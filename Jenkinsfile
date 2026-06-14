@@ -3,7 +3,7 @@
 pipeline {
 
     agent {
-        label 'mac'
+        label 'Agent-Mac'
     }
 
     environment {
