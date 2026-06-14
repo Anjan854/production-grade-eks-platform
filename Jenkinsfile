@@ -3,14 +3,13 @@
 pipeline {
 
     agent {
-        label 'Agent-Mac'
+        label 'mac'
     }
 
     environment {
         AWS_REGION = 'ap-south-1'
         ACCOUNT_ID = '739022091869'
-        REPOSITORY = 'frontend'
-        IMAGE_TAG = "${BUILD_NUMBER}"
+        IMAGE_TAG  = "${BUILD_NUMBER}"
     }
 
     stages {
@@ -30,18 +29,51 @@ pipeline {
             }
         }
 
-        stage('Build and Push') {
+        stage('Build and Push All Services') {
             steps {
+                script {
 
-                buildAndPushImage(
-                    accountId : env.ACCOUNT_ID,
-                    region    : env.AWS_REGION,
-                    repository: env.REPOSITORY,
-                    tag       : env.IMAGE_TAG,
-                    context   : 'microservices/src/frontend'
-                )
+                    def services = [
+                        'frontend',
+                        'adservice',
+                        'cartservice',
+                        'checkoutservice',
+                        'currencyservice',
+                        'emailservice',
+                        'paymentservice',
+                        'productcatalogservice',
+                        'recommendationservice',
+                        'shippingservice',
+                        'loadgenerator',
+                        'shoppingassistantservice'
 
+                    ]
+
+                    services.each { service ->
+
+                        echo "Building ${service}"
+
+                        buildAndPushImage(
+                            accountId : env.ACCOUNT_ID,
+                            region    : env.AWS_REGION,
+                            repository: service,
+                            tag       : env.IMAGE_TAG,
+                            context   : "microservices/src/${service}"
+                        )
+                    }
+                }
             }
+        }
+    }
+
+    post {
+
+        success {
+            echo "All images pushed successfully"
+        }
+
+        failure {
+            echo "Pipeline failed"
         }
     }
 }
