@@ -36,7 +36,7 @@ pipeline {
                     def services = [
                         'frontend',
                         'adservice',
-                        'cartservice',
+                        'cartservice/src',
                         'checkoutservice',
                         'currencyservice',
                         'emailservice',
