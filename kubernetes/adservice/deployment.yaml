@@ -24,7 +24,7 @@ spec:
         runAsUser: 1000
       containers:
         - name: adservice
-          image: adservice
+          image: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/adservice:10
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9555

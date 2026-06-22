@@ -42,7 +42,7 @@ spec:
               - ALL
           privileged: false
           readOnlyRootFilesystem: true
-        image: shippingservice
+        image: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/shippingservice:10
         ports:
         - containerPort: 50051
         env:

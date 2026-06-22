@@ -22,7 +22,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: currencyservice
-          image: "gcr.io/google-samples/microservices-demo/currencyservice:v0.4.0"
+          image: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/currencyservice:10
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

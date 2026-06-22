@@ -23,7 +23,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: cartservice
-        image: gcr.io/google-samples/microservices-demo/cartservice:v0.3.5
+        image: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/cartservice:10
         ports:
         - containerPort: 7070
         env:
