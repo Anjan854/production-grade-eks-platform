@@ -89,7 +89,7 @@ spec:
               configMapKeyRef:
                 name: frontend-config
                 key: checkout_service_addr
-         - name: AD_SERVICE_ADDR
+          - name: AD_SERVICE_ADDR
             valueFrom:
               configMapKeyRef:
                 name: frontend-config
