@@ -33,6 +33,25 @@ resource "aws_eks_cluster" "this" {
   ]
 }
 
+# OIDC Provider
+
+data "tls_certificate" "eks" {
+  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+}
+
+resource "aws_iam_openid_connect_provider" "eks" {
+  url = aws_eks_cluster.this.identity[0].oidc[0].issuer
+
+  client_id_list = [
+    "sts.amazonaws.com"
+  ]
+
+  thumbprint_list = [
+    data.tls_certificate.eks.certificates[0].sha1_fingerprint
+  ]
+}
+
+
 # Node Group Creation
 
 resource "aws_iam_role" "node_role" {
@@ -66,13 +85,13 @@ resource "aws_iam_role_policy_attachment" "node_policy_3" {
 }
 
 resource "aws_eks_node_group" "this" {
-  cluster_name    = aws_eks_cluster.this.name
-  node_role_arn   = aws_iam_role.node_role.arn
-  subnet_ids      = var.private_subnet_ids
+  cluster_name  = aws_eks_cluster.this.name
+  node_role_arn = aws_iam_role.node_role.arn
+  subnet_ids    = var.private_subnet_ids
 
   scaling_config {
-    desired_size = 1
-    max_size     = 2
+    desired_size = 3
+    max_size     = 3
     min_size     = 1
   }
 

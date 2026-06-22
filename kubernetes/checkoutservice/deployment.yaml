@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkoutservice
+  namespace: dev
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: checkoutservice
+  template:
+    metadata:
+      labels:
+        app: checkoutservice
+    spec:
+      serviceAccountName: checkoutservice
+      terminnationGracePeriodSeconds: 30
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3000
+        fsGroup: 2000
+        runAsNonRoot: true
+      containers:
+        - name: checkoutservice
+          image: "gcr.io/google-samples/microservices-demo/checkoutservice:v0.4.0"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL 
+            privileged: false
+            readOnlyRootFilesystem: true
+          ports:
+            - containerPort: 5050
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            grpc:
+              port: 5050
+          livenessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            grpc:
+              port: 5050
+          envFrom:
+            - configMapRef:
+                name: checkoutservice-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi

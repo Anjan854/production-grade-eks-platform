@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+  namespace: dev
+  
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+        labels:
+          app: frontend 
+        annotations:
+          sidecar.istio.io/rewriteAppHTTPProbers: "true"
+    spec:
+      serviceAccountName: frontend
+      securityContext: 
+        fsGroup: 1000
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+        - name: frontend
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+          image: frontend
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8080
+          readinessProbe:
+            initialDelaySeconds: 10
+            httpGet: 
+              path: /_healthz
+              port: 8080
+              httpHeaders:
+              - name: "Cookie"
+                value: "shop_session-id=x-readiness-probe"
+          livenessProbe:
+            initialDelaySeconds: 10
+            httpGet: 
+              path: /_healthz
+              port: 8080
+              httpHeaders:
+              - name: "Cookie"
+                value: "shop_session-id=x-liveness-probe"
+          env:
+          - name: PORT
+            valueFrom:
+              configMapKeyRef:
+                name: frontend-config
+                key: port
+          - name: PRODUCT_CATALOG_SERVICE_ADDR
+            valueFrom:
+              configMapKeyRef: 
+                name: frontend-config
+                key: product_catalog_service_addr
+          - name: CURRENCY_SERVICE_ADDR
+            valueFrom:
+              configMapKeyRef:
+                name: frontend-config
+                key: currency_service_addr
+          - name: CART_SERVICE_ADDR
+            valueFrom:
+              configMapKeyRef:
+                name: frontend-config
+                key: cart_service_addr
+          - name: RECOMMENDATION_SERVICE_ADDR
+            valueFrom:
+              configMapKeyRef: 
+                name: frontend-config
+                key: recommendation_service_addr
+          - name: SHIPPING_SERVICE_ADDR
+            valueFrom:
+              configMapKeyRef:
+                name: frontend-config
+                key: shipping_service_addr
+          - name: CHECKOUT_SERVICE_ADDR
+            valueFrom:
+              configMapKeyRef:
+                name: frontend-config
+                key: checkout_service_addr
+         - name: AD_SERVICE_ADDR
+            valueFrom:
+              configMapKeyRef:
+                name: frontend-config
+                key: ad_service_addr
+          - name: SHOPPING_ASSISTANT_SERVICE_ADDR
+            valueFrom:
+              configMapKeyRef:
+                name: frontend-config
+                key: shopping_assistant_service_addr
+          - name: ENABLE_PROFILER
+            valueFrom:
+              configMapKeyRef:
+                name: frontend-config
+                key: enable_profiler
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "128Mi"

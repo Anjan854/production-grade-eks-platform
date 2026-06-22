@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cartservice-config
+  namespace: dev
+data:
+  redis_host: "redis-cart:6379"

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currencyservice
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: currencyservice
+  template:
+    metadata:
+      labels:
+        app: currencyservice
+    spec:
+      serviceAccountName: currencyservice
+      terminnationGracePeriodSeconds: 30
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 3000
+        fsGroup: 2000
+        runAsNonRoot: true
+      containers:
+        - name: currencyservice
+          image: "gcr.io/google-samples/microservices-demo/currencyservice:v0.4.0"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            readOnlyRootFilesystem: true
+          ports:
+            - containerPort: 7000
+          readinessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            grpc:
+              port: 7000
+          livenessProbe:
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            grpc:
+              port: 7000
+          envFrom:
+            - configMapRef:
+                name: currencyservice-config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi

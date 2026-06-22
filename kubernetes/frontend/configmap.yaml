@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: dev
+data:
+  port: "8080"
+  product_catalog_service_addr: "productcatalogservice:3550"
+  currency_service_addr: "currencyservice:7000"
+  cart_service_addr: "cartservice:7070"
+  recommendation_service_addr: "recommendationservice:8080"
+  shipping_service_addr: "shippingservice:50051"
+  checkout_service_addr: "checkoutservice:5050"
+  ad_service_addr: "adservice:9555"
+  shopping_assistant_service_addr: "shoppingassistantservice:8080"
+  enable_profiler: "0"
+
+  # echo -n "frontend" | base64
