@@ -92,9 +92,7 @@ pipeline {
                     'paymentservice',
                     'productcatalogservice',
                     'recommendationservice',
-                    'shippingservice',
-                    'loadgenerator',
-                    'shoppingassistantservice'
+                    'shippingservice'
             ]
 
                     services.each { service ->
