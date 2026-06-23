@@ -4,4 +4,4 @@ metadata:
   name: adservice-config
   namespace: dev
 data:
-  port: "5000"
+  port: "9555"
