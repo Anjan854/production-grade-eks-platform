@@ -12,4 +12,4 @@ resources:
 images:
 - name: frontend
   newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/frontend
-  newTag: "23"
+  newTag: "25"
