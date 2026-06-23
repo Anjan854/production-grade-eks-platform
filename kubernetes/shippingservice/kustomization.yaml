@@ -7,4 +7,4 @@ resources:
 images:
 - name: shippingservice
   newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/shippingservice
-  newTag: "25"
+  newTag: "27"
