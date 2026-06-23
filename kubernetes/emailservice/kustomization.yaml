@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - deployment.yaml
+  - service.yaml
+  - configmap.yaml
+  - service-account.yaml
+
+images:
+  - name: emailservice
+    newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/emailservice
+    newTag: 11

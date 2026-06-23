@@ -1,7 +1,6 @@
 @Library('platform-shared-lib') _
 
 pipeline {
-
     agent {
         label 'Agent-Mac'
     }
@@ -13,6 +12,23 @@ pipeline {
     }
 
     stages {
+        stage('Skip GitOps Commits') {
+            steps {
+                script {
+                    def msg = sh(
+                        script: 'git log -1 --pretty=%B',
+                        returnStdout: true
+                    ).trim()
+
+                    echo "Last commit message: ${msg}"
+
+                    if (msg.contains('[gitops]')) {
+                        currentBuild.result = 'NOT_BUILT'
+                        error('Skipping pipeline - GitOps commit detected')
+                    }
+                }
+            }
+        }
 
         stage('Checkout') {
             steps {
@@ -32,7 +48,6 @@ pipeline {
         stage('Build and Push All Services') {
             steps {
                 script {
-
                     def services = [
                         'frontend',
                         'adservice',
@@ -50,7 +65,6 @@ pipeline {
                     ]
 
                     services.each { service ->
-
                         echo "Building ${service}"
 
                         buildAndPushImage(
@@ -64,16 +78,63 @@ pipeline {
                 }
             }
         }
+
+        stage('Update Kustomize Images') {
+            steps {
+                script {
+                    def services = [
+                    'frontend',
+                    'adservice',
+                    'cartservice',
+                    'checkoutservice',
+                    'currencyservice',
+                    'emailservice',
+                    'paymentservice',
+                    'productcatalogservice',
+                    'recommendationservice',
+                    'shippingservice',
+                    'loadgenerator',
+                    'shoppingassistantservice'
+            ]
+
+                    services.each { service ->
+                        def image = "${ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${service}"
+
+                        updateKustomizeImage(
+                    service,
+                    image,
+                    env.IMAGE_TAG,
+                    "kubernetes/${service}"
+                )
+                    }
+                }
+            }
+        }
+
+        stage('Commit GitOps Changes') {
+            steps {
+                script {
+                    echo 'Preparing GitOps commit...'
+
+                    // Commit message (important for loop prevention)
+                    def commitMessage = '[gitops] update image tags ${env.IMAGE_TAG}'
+
+                    // Call shared library function
+                    gitOpsCommit(commitMessage)
+
+                    echo 'GitOps changes pushed successfully'
+                }
+            }
+        }
     }
 
     post {
-
         success {
-            echo "All images pushed successfully"
+            echo 'All images pushed successfully'
         }
 
         failure {
-            echo "Pipeline failed"
+            echo 'Pipeline failed'
         }
     }
 }

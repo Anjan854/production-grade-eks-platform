@@ -23,7 +23,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: cartservice
-        image: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/cartservice:10
+        image: cartservice
         ports:
         - containerPort: 7070
         env:
