@@ -9,6 +9,7 @@ def call(String message, String branch = "main") {
     sh """
         set -e
 
+        git checkout main
         git config user.email "jenkins@local"
         git config user.name "jenkins"
 
