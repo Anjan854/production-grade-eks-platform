@@ -11,7 +11,7 @@ def call(String service, String image, String tag, String path) {
 
         cd ${path}
 
-        kustomize edit set image \
+        /opt/homebrew/bin/kustomize edit set image \
         ${service}=${image}:${tag}
 
         echo "Updated kustomization.yaml:"
