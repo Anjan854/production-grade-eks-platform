@@ -113,9 +113,10 @@ pipeline {
             steps {
                 script {
                     echo 'Preparing GitOps commit...'
+                    def tag = env.IMAGE_TAG
 
                     // Commit message (important for loop prevention)
-                    def commitMessage = '[gitops] update image tags ${env.IMAGE_TAG}'
+                    def commitMessage = "[gitops] update image tags ${tag}"
 
                     // Call shared library function
                     gitOpsCommit(commitMessage)
