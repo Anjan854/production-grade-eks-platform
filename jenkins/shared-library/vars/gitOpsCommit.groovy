@@ -11,8 +11,6 @@ def call(String message) {
         sh """
             set -e
 
-            git checkout main
-
             git config user.email "jenkins@local"
             git config user.name "jenkins"
 
