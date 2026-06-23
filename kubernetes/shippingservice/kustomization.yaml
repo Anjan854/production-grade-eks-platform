@@ -2,9 +2,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - shippingservice.yaml
+- shippingservice.yaml
 
 images:
-  - name: shippingservice
-    newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/shippingservice
-    newTag: "11"
+- name: shippingservice
+  newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/shippingservice
+  newTag: "23"
