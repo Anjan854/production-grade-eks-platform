@@ -1,10 +1,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+#- ingress.yaml
 resources:
 - deployment.yaml
 - service.yaml
-#- ingress.yaml
 - configmap.yaml
 - service-account.yaml
 - Namespace.yaml
@@ -12,4 +12,4 @@ resources:
 images:
 - name: frontend
   newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/frontend
-  newTag: "33"
+  newTag: "35"

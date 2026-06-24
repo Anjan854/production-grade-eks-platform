@@ -7,4 +7,4 @@ resources:
 images:
 - name: recommendationservice
   newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/recommendationservice
-  newTag: "33"
+  newTag: "35"
