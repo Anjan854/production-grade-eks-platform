@@ -10,4 +10,4 @@ resources:
 images:
 - name: currencyservice
   newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/currencyservice
-  newTag: "29"
+  newTag: "31"
