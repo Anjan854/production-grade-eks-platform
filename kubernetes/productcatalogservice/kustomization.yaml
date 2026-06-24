@@ -7,4 +7,4 @@ resources:
 images:
 - name: productcatalogservice
   newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/productcatalogservice
-  newTag: "31"
+  newTag: "33"
