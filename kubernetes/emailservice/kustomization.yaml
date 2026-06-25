@@ -10,4 +10,4 @@ resources:
 images:
 - name: emailservice
   newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/emailservice
-  newTag: "53"
+  newTag: "56"
