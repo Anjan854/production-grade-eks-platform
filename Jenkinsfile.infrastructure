@@ -13,6 +13,11 @@ pipeline {
     }
 
     stages {
+        stage('Checkout SCM') {
+    steps {
+        checkout scm
+    }
+        }
         stage('Check Infra Changes') {
             steps {
                 script {
@@ -145,6 +150,5 @@ pipeline {
         }
     }
 }
-
 
 # This is for testing the webhook trigger for the application pipeline. It will be removed in the future.
