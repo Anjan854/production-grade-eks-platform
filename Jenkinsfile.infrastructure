@@ -1,0 +1,147 @@
+@Library('platform-shared-lib') _
+
+pipeline {
+    agent {
+        label 'Agent-Mac'
+    }
+
+    environment {
+        TF_DIR = 'terraform/environments/dev'
+
+        AWS_REGION = 'ap-south-1'
+        CLUSTER_NAME = 'dev-eks'
+    }
+
+    stages {
+        stage('Check Infra Changes') {
+            steps {
+                script {
+                    def changedFiles = []
+
+                    for (changeLog in currentBuild.changeSets) {
+                        for (entry in changeLog.items) {
+                            for (file in entry.affectedFiles) {
+                                changedFiles.add(file.path)
+                            }
+                        }
+                    }
+
+                    echo 'Changed files:'
+                    changedFiles.each {
+                        echo it
+                    }
+
+                    def infraChanged = changedFiles.any {
+                        it.startsWith('terraform/') ||
+        it.startsWith('alb-controller/') ||
+        it.startsWith('argocd/') ||
+        it == 'Jenkinsfile.infrastructure'
+                    }
+
+                    if (!infraChanged) {
+                        currentBuild.result = 'NOT_BUILT'
+                        error('No infrastructure changes detected')
+                    }
+                }
+            }
+        }
+        stage('Terraform Init') {
+            steps {
+                terraformInit(env.TF_DIR)
+            }
+        }
+
+        stage('Terraform Format Check') {
+            steps {
+                dir(env.TF_DIR) {
+                    sh '''
+            terraform fmt -check -recursive
+            '''
+                }
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                terraformValidate(env.TF_DIR)
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                terraformPlan(env.TF_DIR)
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                terraformApply(env.TF_DIR)
+            }
+        }
+
+        stage('Update Kubeconfig') {
+            steps {
+                updateKubeconfig(
+                    clusterName: env.CLUSTER_NAME,
+                    region: env.AWS_REGION
+                )
+            }
+        }
+
+        stage('Install ALB Controller') {
+            steps {
+                installALBController(
+                    clusterName: env.CLUSTER_NAME,
+                    region: env.AWS_REGION,
+                    saManifestPath: 'alb-controller/eks/'
+                )
+            }
+        }
+
+        stage('Install ArgoCD') {
+            steps {
+                installArgoCD()
+            }
+        }
+
+        stage('Register Git Repository') {
+            steps {
+                registerArgoRepo(
+                    credentialsId: 'github-creds',
+                    repoUrl: 'https://github.com/Anjan854/production-grade-eks-platform.git'
+                )
+            }
+        }
+
+        stage('Create ArgoCD Applications') {
+            steps {
+                createArgoApps()
+            }
+        }
+
+        stage('Trigger Application Pipeline') {
+            steps {
+                build(
+            job: 'production-grade-eks-platform',
+            wait: false,
+            parameters: [
+                booleanParam(
+                    name: 'FORCE_BUILD',
+                    value: true
+                )
+            ]
+        )
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Infrastructure bootstrap completed successfully'
+        }
+
+        failure {
+            echo 'Infrastructure bootstrap failed'
+        }
+    }
+}

@@ -10,6 +10,13 @@ pipeline {
         ACCOUNT_ID = '739022091869'
         IMAGE_TAG  = "${BUILD_NUMBER}"
     }
+    parameters {
+        booleanParam(
+        name: 'FORCE_BUILD',
+        defaultValue: false,
+        description: 'Force application deployment'
+    )
+    }
 
     stages {
         stage('Skip GitOps Commits') {
@@ -25,6 +32,43 @@ pipeline {
                     if (msg.contains('[gitops]')) {
                         currentBuild.result = 'NOT_BUILT'
                         error('Skipping pipeline - GitOps commit detected')
+                    }
+                }
+            }
+        }
+
+        stage('Check Application Changes') {
+            steps {
+                script {
+                    if (params.FORCE_BUILD) {
+                        echo 'FORCE_BUILD enabled. Skipping change detection.'
+                        return
+                    }
+                    def changedFiles = []
+
+                    for (changeLog in currentBuild.changeSets) {
+                        for (entry in changeLog.items) {
+                            for (file in entry.affectedFiles) {
+                                changedFiles.add(file.path)
+                            }
+                        }
+                    }
+
+                    echo 'Changed files:'
+                    changedFiles.each {
+                        echo it
+                    }
+
+                    def appChanged = changedFiles.any {
+                        it.startsWith('microservices/') ||
+                it.startsWith('kubernetes/') ||
+                it == 'Jenkinsfile'
+                    }
+
+                    if (!appChanged) {
+                        currentBuild.result = 'NOT_BUILT'
+
+                        error('No application changes detected')
                     }
                 }
             }
