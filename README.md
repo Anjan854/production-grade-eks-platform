@@ -1,273 +1,381 @@
-# Production-Grade AWS EKS Infrastructure using Terraform
+# Production-Grade EKS Platform
 
-## 📌 Project Overview
+## Overview
 
-This project demonstrates the implementation of a production-style AWS infrastructure using Terraform modules and Amazon EKS.
+This project demonstrates a complete Production-Grade Kubernetes Platform built on Amazon EKS using Infrastructure as Code (Terraform), GitOps (ArgoCD), Continuous Integration/Continuous Delivery (Jenkins), and Kubernetes-native deployment practices.
 
-The goal of this project is to build a scalable and reusable cloud platform following real-world DevOps and Infrastructure as Code (IaC) practices.
-
-The infrastructure currently includes:
-
-* Modular Terraform architecture
-* Production-grade VPC
-* Public & Private subnet architecture
-* Internet Gateway & NAT Gateway
-* Amazon EKS Cluster
-* Managed Node Group
-* Remote Terraform backend using S3 + DynamoDB
-* Multi-environment ready structure
+The platform automatically provisions cloud infrastructure, configures Kubernetes components, deploys applications through GitOps, and supports automated CI/CD workflows.
 
 ---
 
-# 🏗️ Architecture
+## Architecture
 
-## Infrastructure Components
+### Infrastructure Layer
 
-### Networking Layer
-
-* Custom VPC
-* Public Subnets
-* Private Subnets
+* Amazon EKS Cluster
+* VPC and Networking
+* Public and Private Subnets
 * Internet Gateway
-* NAT Gateway
-* Public Route Table
-* Private Route Table
+* Route Tables
+* Security Groups
+* IAM Roles and Policies
 
-### Kubernetes Layer
+### Platform Layer
 
-* Amazon EKS Cluster
-* Managed Node Group
-* IAM Roles & Policies
-* Worker Nodes inside private subnets
+* AWS Load Balancer Controller
+* ArgoCD
+* Kubernetes Namespaces
+* Ingress Management
 
-### Terraform Backend
+### CI/CD Layer
 
-* S3 Remote State Backend
-* DynamoDB State Locking
+* Jenkins Infrastructure Pipeline
+* Jenkins Application Pipeline
+* GitHub Webhooks
+* Shared Jenkins Libraries
+
+### GitOps Layer
+
+* ArgoCD Application Management
+* Automatic Kubernetes Synchronization
+* Declarative Deployments
 
 ---
 
-# 📁 Project Structure
+## Repository Structure
+
+```text
+production-grade-eks-platform/
+│
+├── terraform/
+│   ├── modules/
+│   └── environments/
+│       └── dev/
+│
+├── applications/
+│   ├── frontend/
+│   ├── backend/
+│   └── manifests/
+│
+├── argocd/
+│   ├── applications/
+│   └── projects/
+│
+├── alb-controller/
+│   └── eks/
+│
+├── jenkins/
+│   └── shared-library/
+│
+├── Jenkinsfile.infrastructure
+├── Jenkinsfile.application
+│
+└── README.md
+```
+
+---
+
+# CI/CD Workflow
+
+## Infrastructure Pipeline
+
+The infrastructure pipeline is responsible for provisioning and maintaining platform infrastructure.
+
+### Pipeline Stages
+
+1. Checkout SCM
+2. Detect Infrastructure Changes
+3. Terraform Init
+4. Terraform Format Validation
+5. Terraform Validate
+6. Terraform Plan
+7. Terraform Apply
+8. Update Kubeconfig
+9. Install AWS Load Balancer Controller
+10. Install ArgoCD
+11. Register Git Repository in ArgoCD
+12. Create ArgoCD Applications
+13. Trigger Application Pipeline
+
+### Trigger Conditions
+
+The infrastructure pipeline executes when changes occur in:
 
 ```text
 terraform/
-├── modules/
-│   ├── vpc/
-│   │   ├── main.tf
-│   │   ├── variables.tf
-│   │   └── outputs.tf
-│   │
-│   └── eks/
-│       ├── main.tf
-│       ├── variables.tf
-│       └── outputs.tf
-│
-└── environments/
-    └── dev/
-        ├── backend.tf
-        ├── provider.tf
-        ├── main.tf
+alb-controller/
+argocd/
+Jenkinsfile.infrastructure
 ```
 
 ---
 
-# ☁️ AWS Services Used
+## Application Pipeline
 
-* Amazon VPC
-* Amazon EKS
-* EC2
-* IAM
-* S3
-* DynamoDB
-* CloudWatch
+The application pipeline manages application delivery.
+
+### Pipeline Stages
+
+1. Checkout Source Code
+2. Detect Application Changes
+3. Build Docker Images
+4. Push Images to Registry
+5. Update Kubernetes Manifests
+6. Commit Manifest Changes
+7. Push Changes to GitHub
+
+### Trigger Conditions
+
+The application pipeline executes when changes occur in:
+
+```text
+applications/
+Dockerfiles
+Jenkinsfile.application
+```
+
+The pipeline can also be triggered automatically by the Infrastructure Pipeline after successful cluster provisioning.
 
 ---
 
-# ⚙️ Technologies Used
+# GitOps Workflow
 
+This platform follows GitOps principles using ArgoCD.
+
+## Deployment Flow
+
+```text
+Developer
+    |
+    v
+GitHub Repository
+    |
+    v
+Jenkins Pipeline
+    |
+    v
+Update Kubernetes Manifests
+    |
+    v
+GitHub Repository
+    |
+    v
+ArgoCD
+    |
+    v
+Amazon EKS Cluster
+```
+
+ArgoCD continuously monitors Git repositories and synchronizes desired state with the Kubernetes cluster.
+
+---
+
+# Infrastructure Provisioning
+
+Terraform provisions:
+
+### Networking
+
+* VPC
+* Public Subnets
+* Private Subnets
+* Internet Gateway
+* Route Tables
+
+### Kubernetes
+
+* Amazon EKS Control Plane
+* Managed Node Groups
+* IAM Roles
+* Security Groups
+
+### Integrations
+
+* OIDC Provider
+* IAM Roles for Service Accounts (IRSA)
+
+---
+
+# AWS Load Balancer Controller
+
+The AWS Load Balancer Controller is installed automatically during infrastructure bootstrap.
+
+Features:
+
+* Application Load Balancer provisioning
+* Ingress support
+* Target Group management
+* AWS-native traffic routing
+
+---
+
+# ArgoCD Installation
+
+ArgoCD is installed automatically after EKS cluster creation.
+
+Features:
+
+* GitOps deployment management
+* Automatic synchronization
+* Rollback support
+* Application health monitoring
+
+---
+
+# Jenkins Shared Library
+
+Reusable pipeline logic is implemented through Jenkins Shared Libraries.
+
+Examples:
+
+```text
+terraformInit()
+terraformValidate()
+terraformPlan()
+terraformApply()
+
+updateKubeconfig()
+
+installALBController()
+
+installArgoCD()
+
+registerArgoRepo()
+
+createArgoApps()
+```
+
+This approach reduces duplication and improves maintainability.
+
+---
+
+# Prerequisites
+
+Before running the platform:
+
+* AWS Account
+* IAM User with Administrator Access
 * Terraform
-* Kubernetes
 * AWS CLI
 * kubectl
+* Helm
+* Jenkins
+* GitHub Repository
+* Docker
 
 ---
 
-# 🚀 Features
+# Jenkins Configuration
 
-* Modular Terraform codebase
-* Reusable infrastructure modules
-* Multi-AZ subnet architecture
-* Public/private subnet separation
-* Secure remote Terraform state
-* State locking using DynamoDB
-* Managed Kubernetes deployment
-* Production-style infrastructure design
-
----
-
-# 🧠 Key Concepts Demonstrated
-
-* Infrastructure as Code (IaC)
-* Terraform Modules
-* AWS Networking
-* Kubernetes on AWS
-* EKS Cluster Provisioning
-* IAM Role Management
-* Remote State Management
-* Production Infrastructure Architecture
-
----
-
-# 🌐 Networking Architecture
+Required Credentials:
 
 ```text
-VPC
-│
-├── Public Subnets
-│   ├── Internet Gateway
-│   └── NAT Gateway
-│
-├── Private Subnets
-│   └── EKS Worker Nodes
-│
-└── Route Tables
-    ├── Public Route Table
-    └── Private Route Table
+github-creds
+aws-credentials
 ```
 
----
-
-# 🔐 Remote Backend Configuration
-
-Terraform state is stored remotely in AWS S3.
+Required Tools:
 
 ```text
-Bucket: ninza-terraform-state-prod
-Key: eks-platform/dev/terraform.tfstate
-Region: ap-south-1
+Terraform
+AWS CLI
+kubectl
+Helm
+Git
+Docker
 ```
 
-Terraform state locking is enabled using DynamoDB.
+---
+
+# Deployment Steps
+
+## Infrastructure Deployment
+
+Push changes to:
 
 ```text
-Table: terraform-locks
+terraform/
+argocd/
+alb-controller/
 ```
 
----
-
-# 🛠️ Deployment Steps
-
-## 1. Initialize Terraform
+or manually execute:
 
 ```bash
-terraform init
+Build -> infrastructure-bootstrap
 ```
 
----
+The pipeline will:
 
-## 2. Validate Configuration
-
-```bash
-terraform validate
-```
-
----
-
-## 3. Review Infrastructure Plan
-
-```bash
-terraform plan
-```
+* Create EKS cluster
+* Configure Kubernetes access
+* Install AWS Load Balancer Controller
+* Install ArgoCD
+* Register Git repository
+* Create ArgoCD applications
 
 ---
 
-## 4. Deploy Infrastructure
+## Application Deployment
 
-```bash
-terraform apply
-```
+Push application code changes.
 
----
+The Application Pipeline will:
 
-# ☸️ Configure Kubernetes Access
+* Build container images
+* Push images
+* Update deployment manifests
+* Commit changes
+* Trigger GitOps deployment
 
-Update kubeconfig:
-
-```bash
-aws eks update-kubeconfig \
-  --name dev-eks \
-  --region ap-south-1
-```
-
-Verify cluster:
-
-```bash
-kubectl get nodes
-```
+ArgoCD will automatically synchronize the cluster state.
 
 ---
 
-# 📈 Current Progress
+# Security Considerations
 
-## ✅ Day 1 Completed
+This platform implements:
 
-* VPC Module
-* Public/Private Subnets
-* Internet Gateway
-* NAT Gateway
-* Route Tables
-* Remote Backend Setup
-
-## ✅ Day 2 Completed
-
-* Amazon EKS Cluster
-* Managed Node Group
-* IAM Roles & Policies
-* Kubernetes Cluster Access
+* IAM Roles for Service Accounts (IRSA)
+* Kubernetes RBAC
+* GitHub Credential Management through Jenkins Credentials
+* Private Subnets for Worker Nodes
+* Least Privilege Access Principles
 
 ---
 
-# 🔮 Upcoming Improvements
+# Future Improvements
 
-* Jenkins CI/CD Integration
-* Amazon ECR Integration
-* Dockerized Applications
-* Kubernetes Deployments & Services
-* Ingress Controller
-* Monitoring with Prometheus & Grafana
-* Helm-based Deployments
+Planned enhancements:
 
----
-
-# 💰 Cost Optimization
-
-To reduce AWS costs during learning:
-
-* Small node groups are used
-* Minimal scaling configuration is used
-* Infrastructure can be destroyed when idle
-
-Destroy infrastructure:
-
-```bash
-terraform destroy
-```
+* Prometheus Monitoring
+* Grafana Dashboards
+* Loki Log Aggregation
+* KEDA Event-Driven Autoscaling
+* External Secrets Operator
+* HashiCorp Vault Integration
+* Multi-Environment Support (Dev, Stage, Prod)
+* Blue/Green Deployments
+* Canary Releases
 
 ---
 
-# 👨‍💻 Author
+# Key Technologies
 
-DevOps Engineering Learning Project focused on:
-
-* AWS
 * Terraform
+* Amazon EKS
 * Kubernetes
-* CI/CD
-* Cloud Infrastructure
-* Production-grade DevOps practices
+* Jenkins
+* ArgoCD
+* Helm
+* Docker
+* GitHub Actions
+* AWS Load Balancer Controller
 
 ---
 
-# 📌 Project Goal
+# Author
 
-The purpose of this project is to gain hands-on experience building production-grade cloud infrastructure similar to real-world DevOps and Platform Engineering environments.
+Ashraf Mahmud Anjan
+
+DevOps Engineer | Kubernetes | AWS | Terraform | Jenkins | GitOps
