@@ -42,7 +42,7 @@ pipeline {
                     }
 
                     // ✅ IMPORTANT FIX
-                    def isManualBuild = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) != null
+                    def isManualBuild = currentBuild.getBuildCauses().toString().contains('UserIdCause')
                     def isFirstBuild = currentBuild.number == 1
 
                     if (!infraChanged && !isManualBuild && !isFirstBuild) {
