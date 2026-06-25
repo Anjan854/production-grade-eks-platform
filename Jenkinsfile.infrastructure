@@ -14,9 +14,9 @@ pipeline {
 
     stages {
         stage('Checkout SCM') {
-    steps {
-        checkout scm
-    }
+            steps {
+                checkout scm
+            }
         }
         stage('Check Infra Changes') {
             steps {
@@ -32,21 +32,24 @@ pipeline {
                     }
 
                     echo 'Changed files:'
-                    changedFiles.each {
-                        echo it
-                    }
+                    changedFiles.each { echo it }
 
                     def infraChanged = changedFiles.any {
                         it.startsWith('terraform/') ||
-        it.startsWith('alb-controller/') ||
-        it.startsWith('argocd/') ||
-        it == 'Jenkinsfile.infrastructure'
+                it.startsWith('alb-controller/') ||
+                it.startsWith('argocd/') ||
+                it == 'Jenkinsfile.infrastructure'
                     }
 
-                    if (!infraChanged) {
-                        currentBuild.result = 'NOT_BUILT'
+                    // ✅ IMPORTANT FIX
+                    def isManualBuild = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) != null
+                    def isFirstBuild = currentBuild.number == 1
+
+                    if (!infraChanged && !isManualBuild && !isFirstBuild) {
                         error('No infrastructure changes detected')
                     }
+
+                    echo 'Infra change check passed (manual or first build or real change)'
                 }
             }
         }
