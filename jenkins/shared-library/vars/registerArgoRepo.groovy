@@ -1,5 +1,4 @@
 def call(Map config = [:]) {
-
     withCredentials([
         usernamePassword(
             credentialsId: config.credentialsId,
@@ -7,9 +6,11 @@ def call(Map config = [:]) {
             passwordVariable: 'GITHUB_PAT'
         )
     ]) {
-
         sh """
-        cat <<EOF | /usr/local/bin/kubectl apply -f -
+
+        export PATH=/usr/local/bin:/opt/homebrew/bin:$PATH
+
+        cat <<EOF | kubectl apply -f -
         apiVersion: v1
         kind: Secret
         metadata:
