@@ -4,7 +4,8 @@ def call(Map config = [:]) {
 
         def vpcId = sh(
             script: """
-            /usr/local/bin/aws eks describe-cluster \
+            export PATH=/usr/local/bin:/opt/homebrew/bin:$PATH
+            aws eks describe-cluster \
               --name ${config.clusterName} \
               --region ${config.region} \
               --query "cluster.resourcesVpcConfig.vpcId" \
@@ -18,7 +19,8 @@ def call(Map config = [:]) {
         sh """
         set -e
 
-        /usr/local/bin/kubectl apply -f ${config.saManifestPath}
+        export PATH=/usr/local/bin:/opt/homebrew/bin:$PATH
+        kubectl apply -f ${config.saManifestPath}
 
         /opt/homebrew/bin/helm upgrade --install aws-load-balancer-controller \
           eks/aws-load-balancer-controller \

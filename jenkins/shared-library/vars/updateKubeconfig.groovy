@@ -3,7 +3,10 @@ def call(Map config = [:]) {
     sh """
     set -e
 
-    /usr/local/bin/aws eks update-kubeconfig \
+    export PATH=/usr/local/bin:/opt/homebrew/bin:\$PATH
+    export KUBECONFIG=\$HOME/.kube/config
+
+    aws eks update-kubeconfig \
       --region ${config.region} \
       --name ${config.clusterName}
     """
