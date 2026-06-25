@@ -1,21 +1,20 @@
 def call() {
-
-    sh '''
+  sh '''
     set -e
     export PATH=/usr/local/bin:/opt/homebrew/bin:$PATH
     kubectl create namespace argocd \
       --dry-run=client -o yaml | kubectl apply -f -
 
-    kubectl apply \
-      -n argocd \
-      -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+    kubectl apply --server-side \
+  -n argocd \
+  -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
     '''
 
-    echo 'Waiting for ArgoCD components...'
+  echo 'Waiting for ArgoCD components...'
 
-    sh '''
+  sh '''
     export PATH=/usr/local/bin:/opt/homebrew/bin:$PATH
-    
+
     kubectl rollout status deployment/argocd-server \
       -n argocd \
       --timeout=300s
@@ -29,5 +28,5 @@ def call() {
       --timeout=300s
     '''
 
-    echo 'ArgoCD installation completed'
+  echo 'ArgoCD installation completed'
 }

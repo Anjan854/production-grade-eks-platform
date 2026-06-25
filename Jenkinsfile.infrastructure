@@ -106,6 +106,18 @@ pipeline {
             }
         }
 
+        stage('Wait For ALB Controller') {
+            steps {
+                sh '''
+        export PATH=/usr/local/bin:/opt/homebrew/bin:$PATH
+
+        kubectl rollout status deployment/aws-load-balancer-controller \
+          -n kube-system \
+          --timeout=300s
+        '''
+            }
+        }
+
         stage('Install ArgoCD') {
             steps {
                 installArgoCD()
