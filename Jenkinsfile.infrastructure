@@ -133,6 +133,12 @@ pipeline {
             }
         }
 
+        stage('Install Prometheus CRDs') {
+            steps {
+                installPrometheusCRDs()
+            }
+        }
+
         stage('Create ArgoCD Applications') {
             steps {
                 createArgoApps()
