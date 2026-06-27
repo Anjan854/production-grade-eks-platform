@@ -10,4 +10,4 @@ resources:
 images:
 - name: checkoutservice
   newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/checkoutservice
-  newTag: "76"
+  newTag: "78"
