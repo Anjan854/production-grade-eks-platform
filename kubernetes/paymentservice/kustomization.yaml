@@ -7,4 +7,4 @@ resources:
 images:
 - name: paymentservice
   newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/paymentservice
-  newTag: "81"
+  newTag: "84"
