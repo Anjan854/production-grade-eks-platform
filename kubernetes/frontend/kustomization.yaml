@@ -8,7 +8,7 @@ resources:
 - configmap.yaml
 - service-account.yaml
 - Namespace.yaml
-# - ingress.yaml
+- ingress.yaml
 
 images:
 - name: frontend
