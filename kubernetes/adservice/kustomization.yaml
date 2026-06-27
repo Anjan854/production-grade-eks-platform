@@ -10,4 +10,4 @@ resources:
 images:
 - name: adservice
   newName: 739022091869.dkr.ecr.ap-south-1.amazonaws.com/adservice
-  newTag: "72"
+  newTag: "76"
