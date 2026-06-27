@@ -1,12 +1,15 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
-
 metadata:
-  name: monitoring
+  name: monitoring-1
   namespace: argocd
-
 spec:
   project: default
+
+  source:
+    repoURL: https://github.com/Anjan854/production-grade-eks-platform.git
+    targetRevision: main
+    path: argocd/monitoring
 
   destination:
     server: https://kubernetes.default.svc
@@ -16,22 +19,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
     syncOptions:
       - CreateNamespace=true
-
-  sources:
-
-    # Source 1
-    - repoURL: https://prometheus-community.github.io/helm-charts
-      chart: kube-prometheus-stack
-      targetRevision: 77.12.0
-
-      helm:
-        valueFiles:
-          - $values/argocd/monitoring/values.yaml
-
-    # Source 2
-    - repoURL: https://github.com/Anjan854/production-grade-eks-platform.git
-      targetRevision: main
-      ref: values
