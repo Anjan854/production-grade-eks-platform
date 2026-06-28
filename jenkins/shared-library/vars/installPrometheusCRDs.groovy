@@ -5,24 +5,30 @@ def call() {
 
     export PATH=/usr/local/bin:/opt/homebrew/bin:$PATH
 
-    kubectl apply --server-side \
-      -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.85.0/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagerconfigs.yaml
+    VERSION=v0.85.0
+    BASE=https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/${VERSION}/example/prometheus-operator-crd
 
-    kubectl apply --server-side \
-      -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.85.0/example/prometheus-operator-crd/monitoring.coreos.com_alertmanagers.yaml
+    CRDS="
+    monitoring.coreos.com_alertmanagerconfigs.yaml
+    monitoring.coreos.com_alertmanagers.yaml
+    monitoring.coreos.com_podmonitors.yaml
+    monitoring.coreos.com_probes.yaml
+    monitoring.coreos.com_prometheusagents.yaml
+    monitoring.coreos.com_prometheuses.yaml
+    monitoring.coreos.com_prometheusrules.yaml
+    monitoring.coreos.com_scrapeconfigs.yaml
+    monitoring.coreos.com_servicemonitors.yaml
+    monitoring.coreos.com_thanosrulers.yaml
+    "
 
-    kubectl apply --server-side \
-      -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.85.0/example/prometheus-operator-crd/monitoring.coreos.com_prometheuses.yaml
-
-    kubectl apply --server-side \
-      -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.85.0/example/prometheus-operator-crd/monitoring.coreos.com_prometheusagents.yaml
-
-    kubectl apply --server-side \
-      -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.85.0/example/prometheus-operator-crd/monitoring.coreos.com_scrapeconfigs.yaml
-
-    kubectl apply --server-side \
-      -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.85.0/example/prometheus-operator-crd/monitoring.coreos.com_thanosrulers.yaml
+    for crd in $CRDS
+    do
+      kubectl apply \
+        --server-side \
+        --force-conflicts \
+        -f ${BASE}/${crd}
+    done
     '''
 
-    echo "Prometheus CRDs installed"
+    echo 'Prometheus CRDs installed successfully'
 }
